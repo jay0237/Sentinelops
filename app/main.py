@@ -1,7 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from sqlalchemy.orm import Session
+
 from app.config.database import engine
 from app.config.base import Base
 from app.models.user import User
+
+from app.schemas.user import UserCreate
+from app.config.deps import get_db
 
 app = FastAPI()
 
@@ -38,3 +43,22 @@ def db_check():
         return {
             "error": str(e)
         }
+
+
+@app.post("/register")
+def register_user(user: UserCreate, db: Session = Depends(get_db)):
+
+    new_user = User(
+        username=user.username,
+        email=user.email,
+        password=user.password
+    )
+
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+
+    return {
+        "message": "User registered successfully",
+        "user_id": new_user.id
+    }
