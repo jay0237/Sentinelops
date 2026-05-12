@@ -7,6 +7,7 @@ from app.models.user import User
 
 from app.schemas.user import UserCreate
 from app.config.deps import get_db
+from app.utils.security import hash_password
 
 app = FastAPI()
 
@@ -51,7 +52,7 @@ def register_user(user: UserCreate, db: Session = Depends(get_db)):
     new_user = User(
         username=user.username,
         email=user.email,
-        password=user.password
+        password=hash_password(user.password)
     )
 
     db.add(new_user)
