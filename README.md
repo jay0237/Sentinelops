@@ -32,6 +32,7 @@ The project focuses on building everything step-by-step manually instead of rely
 * Password Hashing using Bcrypt
 * JWT Access Token Generation
 * Secure Password Verification
+* prompting auditorium
 
 ## Backend Architecture
 
