@@ -9,7 +9,7 @@ from app.models.user import User
 
 from app.schemas.user import UserCreate
 from app.config.auth_deps import get_current_user
-
+from app.middleware.guard import scan_prompt
 
 from app.utils.security import (
     hash_password,
@@ -130,3 +130,11 @@ def get_profile(
         "username": current_user.username,
         "email": current_user.email
     }
+
+
+@app.post("/scan")
+def scan_ai_prompt(prompt: dict):
+
+    result = scan_prompt(prompt["text"])
+
+    return result
