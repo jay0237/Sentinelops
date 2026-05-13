@@ -7,7 +7,9 @@ from app.config.deps import get_db
 
 from app.models.user import User
 
-from app.schemas.user import UserCreate, UserLogin
+from app.schemas.user import UserCreate
+from app.config.auth_deps import get_current_user
+
 
 from app.utils.security import (
     hash_password,
@@ -77,14 +79,17 @@ def register_user(
     }
 
 
+from fastapi.security import OAuth2PasswordRequestForm
+
+
 @app.post("/login")
 def login_user(
-    user: UserLogin,
+    form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
 
     existing_user = db.query(User).filter(
-        User.email == user.email
+        User.email == form_data.username
     ).first()
 
     if not existing_user:
@@ -93,7 +98,7 @@ def login_user(
         }
 
     password_valid = verify_password(
-        user.password,
+        form_data.password,
         existing_user.password
     )
 
@@ -112,4 +117,16 @@ def login_user(
     return {
         "access_token": access_token,
         "token_type": "bearer"
+    }
+
+
+@app.get("/profile")
+def get_profile(
+    current_user: User = Depends(get_current_user)
+):
+
+    return {
+        "id": current_user.id,
+        "username": current_user.username,
+        "email": current_user.email
     }

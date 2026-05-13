@@ -1,3 +1,4 @@
+from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from datetime import datetime, timedelta
 
@@ -20,3 +21,16 @@ def create_access_token(data: dict):
     )
 
     return encoded_jwt
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+
+def verify_access_token(token: str):
+
+    payload = jwt.decode(
+        token,
+        SECRET_KEY,
+        algorithms=[ALGORITHM]
+    )
+
+    return payload
+    
