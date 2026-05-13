@@ -10,7 +10,7 @@ from app.models.user import User
 from app.schemas.user import UserCreate
 from app.config.auth_deps import get_current_user
 from app.middleware.guard import scan_prompt
-
+from app.models.prompt_log import PromptLog
 from app.utils.security import (
     hash_password,
     verify_password
@@ -133,8 +133,20 @@ def get_profile(
 
 
 @app.post("/scan")
-def scan_ai_prompt(prompt: dict):
+def scan_ai_prompt(
+    prompt: dict,
+    db: Session = Depends(get_db)
+):
 
     result = scan_prompt(prompt["text"])
+
+    log = PromptLog(
+        prompt=prompt["text"],
+        status="safe" if result["safe"] else "blocked",
+        reason=result["reason"]
+    )
+
+    db.add(log)
+    db.commit()
 
     return result
