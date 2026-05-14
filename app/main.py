@@ -13,6 +13,8 @@ from app.middleware.guard import scan_prompt
 from app.models.prompt_log import PromptLog
 from sqlalchemy import func
 from app.utils.pii_scanner import detect_pii
+from app.utils.injection_detector import detect_prompt_injection
+
 
 from app.utils.security import (
     hash_password,
@@ -192,3 +194,13 @@ def detect_pii_endpoint(data: dict):
         return {
             "pii_detected": result
         }
+
+        @app.post("/detect-injection")
+        def detect_injection(data: dict):
+
+            result = detect_prompt_injection(
+                data["text"]
+                )
+
+            return result
+                   
