@@ -12,6 +12,7 @@ from app.config.auth_deps import get_current_user
 from app.middleware.guard import scan_prompt
 from app.models.prompt_log import PromptLog
 from sqlalchemy import func
+from app.utils.pii_scanner import detect_pii
 
 from app.utils.security import (
     hash_password,
@@ -173,3 +174,21 @@ def get_analytics(
         "safe_prompts": safe_prompts,
         "blocked_prompts": blocked_prompts
     }
+
+@app.get("/logs")
+def get_logs(
+    db: Session = Depends(get_db)
+):
+
+    logs = db.query(PromptLog).all()
+
+    return logs
+
+@app.post("/detect-pii")
+def detect_pii_endpoint(data: dict):
+
+        result = detect_pii(data["text"])
+
+        return {
+            "pii_detected": result
+        }
