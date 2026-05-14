@@ -21,5 +21,4 @@ def detect_pii(text):
         })
 
     return detected_pii
-
     
