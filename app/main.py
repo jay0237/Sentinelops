@@ -11,6 +11,8 @@ from app.schemas.user import UserCreate
 from app.config.auth_deps import get_current_user
 from app.middleware.guard import scan_prompt
 from app.models.prompt_log import PromptLog
+from sqlalchemy import func
+
 from app.utils.security import (
     hash_password,
     verify_password
@@ -150,3 +152,24 @@ def scan_ai_prompt(
     db.commit()
 
     return result
+
+@app.get("/analytics")
+def get_analytics(
+    db: Session = Depends(get_db)
+):
+
+    total_prompts = db.query(PromptLog).count()
+
+    safe_prompts = db.query(PromptLog).filter(
+        PromptLog.status == "safe"
+    ).count()
+
+    blocked_prompts = db.query(PromptLog).filter(
+        PromptLog.status == "blocked"
+    ).count()
+
+    return {
+        "total_prompts": total_prompts,
+        "safe_prompts": safe_prompts,
+        "blocked_prompts": blocked_prompts
+    }
