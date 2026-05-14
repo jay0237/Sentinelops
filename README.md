@@ -20,6 +20,7 @@ The project focuses on building everything step-by-step manually instead of rely
 * Passlib + Bcrypt
 * Pydantic
 * Uvicorn
+* Prisidio
 
 ---
 
