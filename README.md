@@ -34,6 +34,8 @@ The project focuses on building everything step-by-step manually instead of rely
 * JWT Access Token Generation
 * Secure Password Verification
 * prompting auditorium
+* Add Threat Scoring
+  
 
 ## Backend Architecture
 
