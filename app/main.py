@@ -174,7 +174,12 @@ def get_analytics(
     return {
         "total_prompts": total_prompts,
         "safe_prompts": safe_prompts,
-        "blocked_prompts": blocked_prompts
+        "blocked_prompts": blocked_prompts,
+        "high_threats": high_threats,
+        "security_score": (
+            safe_prompts / total_prompts *100
+            if total_prompts > 0 else 100
+        )
     }
 
 @app.get("/logs")
