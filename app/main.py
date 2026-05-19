@@ -15,6 +15,8 @@ from sqlalchemy import func
 from app.utils.pii_scanner import detect_pii
 from app.utils.injection_detector import detect_prompt_injection
 
+from app.config.api_key import verify_api_key
+
 
 from app.utils.security import (
     hash_password,
@@ -140,7 +142,8 @@ def get_profile(
 @app.post("/scan")
 def scan_ai_prompt(
     prompt: dict,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
 ):
 
     result = scan_prompt(prompt["text"])
