@@ -38,8 +38,9 @@ def scan_prompt(prompt: str):
         }
 
     return {
-        "safe": True,
-        "threat_level": "low",
-        "score": 0,
-        "reason": "Prompt is Safe"
+        "safe": False,
+        "threat_level": "high",
+        "score": score,
+        "reason": f"Blocked Word Detected: {word}",
+        "alert": "Security Team Notified"
     }

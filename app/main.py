@@ -162,9 +162,9 @@ def scan_ai_prompt(
     api_key: str = Depends(verify_api_key)
 ):
 
-    rtext = prompt.get("text", "")
+    text = prompt.get("text", "")
 
-    result = scan_prompt(rtext)
+    result = scan_prompt(text)
 
     log = PromptLog(
         prompt=text,
