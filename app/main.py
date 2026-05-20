@@ -17,7 +17,21 @@ from app.utils.injection_detector import detect_prompt_injection
 
 from app.config.api_key import verify_api_key
 
+from slowapi import Limiter
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
+from fastapi import Request
 
+app = FastAPI()
+
+limiter = Limiter(key_func=get_remote_address)
+
+app.state.limiter = limiter
+
+app.add_middleware(SlowAPIMiddleware)
+
+app.add_middleware(SlowAPIMiddleware)
 from app.utils.security import (
     hash_password,
     verify_password
@@ -140,16 +154,20 @@ def get_profile(
 
 
 @app.post("/scan")
+@limiter.limit("5/minute")
 def scan_ai_prompt(
+    request: Request,
     prompt: dict,
     db: Session = Depends(get_db),
     api_key: str = Depends(verify_api_key)
 ):
 
-    result = scan_prompt(prompt["text"])
+    rtext = prompt.get("text", "")
+
+    result = scan_prompt(rtext)
 
     log = PromptLog(
-        prompt=prompt["text"],
+        prompt=text,
         status="safe" if result["safe"] else "blocked",
         reason=result["reason"]
     )
@@ -211,4 +229,5 @@ def detect_pii_endpoint(data: dict):
                 )
 
             return result
-                   
+
+  
