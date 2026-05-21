@@ -26,7 +26,8 @@ def scan_prompt(prompt: str):
                 "threat_level": "high",
                 "score": score,
                 "reason": f"Blocked Word Detected: {word}",
-                "alert": "Security Team Notified"
+                "alert": "Security Team Notified",
+                "recommendation": "Immediately block and investigate this request"
             }
 
     if profanity.contains_profanity(prompt):
@@ -35,12 +36,14 @@ def scan_prompt(prompt: str):
             "safe": False,
             "threat_level": "medium",
             "score": 5,
-            "reason": "Toxic Content Detected"
+            "reason": "Toxic Content Detected",
+            "recommendation": "Monitor this prompt carefully"
         }
 
     return {
         "safe": True,
         "threat_level": "low",
         "score": 0,
-        "reason": "Prompt is Safe"
+        "reason": "Prompt is Safe",
+        "recommendation": "No Action required"
     }
