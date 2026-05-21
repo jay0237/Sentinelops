@@ -44,7 +44,7 @@ The project focuses on building everything step-by-step manually instead of rely
 * PostgreSQL Integration
 * Structured Project Architecture
 * Environment Variable Support
-
+* add a log status
 ## API System
 
 * Swagger Documentation
