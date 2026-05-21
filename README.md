@@ -35,6 +35,7 @@ The project focuses on building everything step-by-step manually instead of rely
 * Secure Password Verification
 * prompting auditorium
 * Add Threat Scoring
+* improving fronted
   
 
 ## Backend Architecture
