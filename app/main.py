@@ -6,6 +6,7 @@ from app.config.base import Base
 from app.config.deps import get_db
 
 from app.models.user import User
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.schemas.user import UserCreate
 from app.config.auth_deps import get_current_user
@@ -25,6 +26,8 @@ from fastapi import Request
 
 app = FastAPI()
 
+
+
 limiter = Limiter(key_func=get_remote_address)
 
 app.state.limiter = limiter
@@ -41,6 +44,14 @@ from app.utils.auth import create_access_token
 
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Base.metadata.create_all(bind=engine)
 
