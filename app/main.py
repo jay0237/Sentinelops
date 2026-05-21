@@ -237,4 +237,32 @@ def detect_pii_endpoint(data: dict):
 
             return result
 
-  
+@app.get("/admin/stats")
+def admin_stats(
+    db: Session = Depends(get_db)
+):
+
+    total_logs = db.query(PromptLog).count()
+
+    blocked_logs = db.query(PromptLog).filter(
+        PromptLog.status == "blocked"
+    ).count()
+
+    safe_logs = db.query(PromptLog).filter(
+        PromptLog.status == "safe"
+    ).count()
+
+    high_threats = db.query(PromptLog).filter(
+        PromptLog.reason.contains("bypass")
+    ).count()
+
+    return {
+        "total_logs" : total_logs,
+        "blocked_logs" : blocked_logs,
+        "safe_logs" : safe_logs,
+        "high_threats" : high_threats,
+        "medium_threats" : medium_threats
+    }
+
+
+    
