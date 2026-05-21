@@ -205,10 +205,17 @@ def get_analytics(
 
 @app.get("/logs")
 def get_logs(
+    status: str = None,
     db: Session = Depends(get_db)
 ):
 
-    logs = db.query(PromptLog).all()
+    query = db.query(PromptLog)
+    if status:
+        query = query.filter(
+            PromptLog.status == status
+        )
+
+    logs = query.all()
 
     return logs
 
