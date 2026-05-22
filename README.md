@@ -25,6 +25,8 @@ The project focuses on building everything step-by-step manually instead of rely
 ---
 
 # Features
+#fronted:
+*React and Typescript
 
 ## Authentication System
 
