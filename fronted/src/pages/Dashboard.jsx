@@ -24,8 +24,6 @@ function Dashboard() {
 
             setResult(response.data);
 
-            console.log(response.data);
-
         } catch (error) {
 
             console.log(error);
@@ -35,58 +33,62 @@ function Dashboard() {
 
     return (
 
-        <div style={{ padding: "40px" }}>
+        <div className="min-h-screen bg-slate-900 text-white p-10">
 
-            <h1>SentinelOps Dashboard</h1>
+            <h1 className="text-4xl font-bold mb-8">
+                SentinelOps Dashboard
+            </h1>
 
-            <textarea
-                rows="6"
-                cols="60"
-                placeholder="Enter Prompt...."
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-            />
+            <div className="bg-slate-800 p-6 rounded-xl shadow-lg max-w-3xl">
 
-            <br />
-            <br />
+                <textarea
+                    rows="6"
+                    placeholder="Enter Prompt..."
+                    value={prompt}
+                    onChange={(e) => setPrompt(e.target.value)}
+                    className="w-full p-4 rounded-lg bg-slate-700 text-white border border-slate-600"
+                />
 
-            <button onClick={scanPrompt}>
-                Scan Prompt
-            </button>
+                <button
+                    onClick={scanPrompt}
+                    className="mt-4 bg-red-600 hover:bg-red-700 px-6 py-3 rounded-lg font-semibold"
+                >
+                    Scan Prompt
+                </button>
+
+            </div>
 
             {result && (
 
-                <div
-                    style={{
-                        marginTop: "30px",
-                        padding: "20px",
-                        border: "1px solid black",
-                        borderRadius: "10px",
-                        backgroundColor: "#f5f5f5"
-                    }}
-                >
+                <div className="mt-10 bg-slate-800 p-6 rounded-xl shadow-lg max-w-3xl">
 
-                    <h2>Scan Result</h2>
+                    <h2 className="text-2xl font-bold mb-4">
+                        Scan Result
+                    </h2>
 
-                    <p>
-                        <strong>Safe:</strong> {String(result.safe)}
-                    </p>
+                    <div className="space-y-3">
 
-                    <p>
-                        <strong>Threat Level:</strong> {result.threat_level}
-                    </p>
+                        <p>
+                            <strong>Safe:</strong> {String(result.safe)}
+                        </p>
 
-                    <p>
-                        <strong>Score:</strong> {result.score}
-                    </p>
+                        <p>
+                            <strong>Threat Level:</strong> {result.threat_level}
+                        </p>
 
-                    <p>
-                        <strong>Reason:</strong> {result.reason}
-                    </p>
+                        <p>
+                            <strong>Score:</strong> {result.score}
+                        </p>
 
-                    <p>
-                        <strong>Alert:</strong> {result.alert}
-                    </p>
+                        <p>
+                            <strong>Reason:</strong> {result.reason}
+                        </p>
+
+                        <p>
+                            <strong>Recommendation:</strong> {result.recommendation}
+                        </p>
+
+                    </div>
 
                 </div>
 
