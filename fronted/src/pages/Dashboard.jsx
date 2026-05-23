@@ -6,6 +6,21 @@ function Dashboard() {
     const [prompt, setPrompt] = useState("");
     const [result, setResult] = useState(null);
 
+    const getThreatColor = () => {
+
+        if (!result) return "";
+
+        if (result.threat_level === "high") {
+            return "text-red-500";
+        }
+
+        if (result.threat_level === "medium") {
+            return "text-yellow-400";
+        }
+
+        return "text-green-400";
+    };
+
     const scanPrompt = async () => {
 
         try {
@@ -38,6 +53,40 @@ function Dashboard() {
             <h1 className="text-4xl font-bold mb-8">
                 SentinelOps Dashboard
             </h1>
+
+            <div className="grid grid-cols-3 gap-4 mb-8">
+
+                <div className="bg-slate-800 p-6 rounded-xl">
+                    <h2 className="text-xl font-bold">
+                        Threats Blocked
+                    </h2>
+
+                    <p className="text-3xl text-red-500 mt-2">
+                        24
+                    </p>
+                </div>
+
+                <div className="bg-slate-800 p-6 rounded-xl">
+                    <h2 className="text-xl font-bold">
+                        Safe Prompts
+                    </h2>
+
+                    <p className="text-3xl text-green-500 mt-2">
+                        120
+                    </p>
+                </div>
+
+                <div className="bg-slate-800 p-6 rounded-xl">
+                    <h2 className="text-xl font-bold">
+                        Risk Score
+                    </h2>
+
+                    <p className="text-3xl text-yellow-400 mt-2">
+                        89%
+                    </p>
+                </div>
+
+            </div>
 
             <div className="bg-slate-800 p-6 rounded-xl shadow-lg max-w-3xl">
 
@@ -72,7 +121,7 @@ function Dashboard() {
                             <strong>Safe:</strong> {String(result.safe)}
                         </p>
 
-                        <p>
+                        <p className={getThreatColor()}>
                             <strong>Threat Level:</strong> {result.threat_level}
                         </p>
 
