@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import API from "../services/api";
 import { fetchAnalytics } from "../services/analytics";
-import { useEffect } from "react";
+import { fetchLogs } from "../services/logs";
 
 function Dashboard() {
 
     const [prompt, setPrompt] = useState("");
     const [result, setResult] = useState(null);
+
     const [analytics, setAnalytics] = useState(null);
+
+    const [logs, setLogs] = useState([]);
 
     const getThreatColor = () => {
 
@@ -42,6 +46,9 @@ function Dashboard() {
 
             setResult(response.data);
 
+            loadAnalytics();
+            loadLogs();
+
         } catch (error) {
 
             console.log(error);
@@ -50,20 +57,42 @@ function Dashboard() {
     };
 
     useEffect(() => {
+
         loadAnalytics();
+        loadLogs();
+
     }, []);
 
     const loadAnalytics = async () => {
-        
+
         try {
 
             const data = await fetchAnalytics();
+
             setAnalytics(data);
 
         } catch (error) {
+
             console.log(error);
+
         }
     };
+
+    const loadLogs = async () => {
+
+        try {
+
+            const data = await fetchLogs();
+
+            setLogs(data);
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+    };
+
     return (
 
         <div className="min-h-screen bg-slate-900 text-white p-10">
@@ -75,6 +104,7 @@ function Dashboard() {
             <div className="grid grid-cols-3 gap-4 mb-8">
 
                 <div className="bg-slate-800 p-6 rounded-xl">
+
                     <h2 className="text-xl font-bold">
                         Threats Blocked
                     </h2>
@@ -82,9 +112,11 @@ function Dashboard() {
                     <p className="text-3xl text-red-500 mt-2">
                         {analytics?.blocked_prompts || 0}
                     </p>
+
                 </div>
 
                 <div className="bg-slate-800 p-6 rounded-xl">
+
                     <h2 className="text-xl font-bold">
                         Safe Prompts
                     </h2>
@@ -92,16 +124,19 @@ function Dashboard() {
                     <p className="text-3xl text-green-500 mt-2">
                         {analytics?.safe_prompts || 0}
                     </p>
+
                 </div>
 
                 <div className="bg-slate-800 p-6 rounded-xl">
+
                     <h2 className="text-xl font-bold">
-                        Risk Score
+                        Total Prompts
                     </h2>
 
                     <p className="text-3xl text-yellow-400 mt-2">
                         {analytics?.total_prompts || 0}
                     </p>
+
                 </div>
 
             </div>
@@ -160,6 +195,69 @@ function Dashboard() {
                 </div>
 
             )}
+
+            <div className="mt-10">
+
+                <h2 className="text-2xl font-bold mb-4">
+                    Threat Logs
+                </h2>
+
+                <div className="overflow-x-auto">
+
+                    <table className="w-full bg-slate-800 rounded-xl overflow-hidden">
+
+                        <thead className="bg-slate-700">
+
+                            <tr>
+
+                                <th className="p-4 text-left">
+                                    Prompt
+                                </th>
+
+                                <th className="p-4 text-left">
+                                    Status
+                                </th>
+
+                                <th className="p-4 text-left">
+                                    Reason
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {logs.map((log) => (
+
+                                <tr
+                                    key={log.id}
+                                    className="border-t border-slate-700"
+                                >
+
+                                    <td className="p-4">
+                                        {log.prompt}
+                                    </td>
+
+                                    <td className="p-4">
+                                        {log.status}
+                                    </td>
+
+                                    <td className="p-4">
+                                        {log.reason}
+                                    </td>
+
+                                </tr>
+
+                            ))}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
 
         </div>
     );
