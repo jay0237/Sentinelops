@@ -1,10 +1,13 @@
 import { useState } from "react";
 import API from "../services/api";
+import { fetchAnalytics } from "../services/analytics";
+import { useEffect } from "react";
 
 function Dashboard() {
 
     const [prompt, setPrompt] = useState("");
     const [result, setResult] = useState(null);
+    const [analytics, setAnalytics] = useState(null);
 
     const getThreatColor = () => {
 
@@ -46,6 +49,21 @@ function Dashboard() {
         }
     };
 
+    useEffect(() => {
+        loadAnalytics();
+    }, []);
+
+    const loadAnalytics = async () => {
+        
+        try {
+
+            const data = await fetchAnalytics();
+            setAnalytics(data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
     return (
 
         <div className="min-h-screen bg-slate-900 text-white p-10">
@@ -62,7 +80,7 @@ function Dashboard() {
                     </h2>
 
                     <p className="text-3xl text-red-500 mt-2">
-                        24
+                        {analytics?.blocked_prompts || 0}
                     </p>
                 </div>
 
@@ -72,7 +90,7 @@ function Dashboard() {
                     </h2>
 
                     <p className="text-3xl text-green-500 mt-2">
-                        120
+                        {analytics?.safe_prompts || 0}
                     </p>
                 </div>
 
@@ -82,7 +100,7 @@ function Dashboard() {
                     </h2>
 
                     <p className="text-3xl text-yellow-400 mt-2">
-                        89%
+                        {analytics?.total_prompts || 0}
                     </p>
                 </div>
 
