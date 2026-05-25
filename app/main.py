@@ -230,6 +230,27 @@ def get_logs(
 
     return logs
 
+    @app.get("/export-logs")
+    def export_logs(
+        db:Session = Depends(get_db)
+    ):
+     logs = db.query(PromptLog).all()
+
+     exported_logs = []
+
+     for log in logs:
+
+        exported_logs.append({
+            "id": log.id,
+            "prompt": log.prompt,
+            "status": log.status,
+            "reason": log.reason
+        })
+
+        return {
+            "logs": exported_logs
+        }
+
 @app.post("/detect-pii")
 def detect_pii_endpoint(data: dict):
 
