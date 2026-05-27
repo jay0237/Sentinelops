@@ -23,6 +23,8 @@ from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from fastapi import Request
+from fastapi.responses import Response
+from prometheus_client import Counter, generate_latest
 
 app = FastAPI()
 
@@ -44,6 +46,11 @@ from app.utils.auth import create_access_token
 
 
 app = FastAPI()
+
+REQUEST_COUNT = Counter(
+    "sentinelops_api_requests_total",
+    "Total API Requestes"
+)
 
 app.add_middleware(
     CORSMiddleware,
@@ -175,7 +182,7 @@ def scan_ai_prompt(
 
     text = prompt.get("text", "")
 
-    result = scan_prompt(text)
+    result = scan_prompt(prompt["text"])
 
     log = PromptLog(
         prompt=text,
@@ -296,5 +303,12 @@ def admin_stats(
         "medium_threats" : medium_threats
     }
 
+    @app.get("/metrics")
+    def metrics():
 
-    
+        return Response(
+            generate_latest(),
+            media_type="text/plain"
+        )
+
+        

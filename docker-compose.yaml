@@ -1,11 +1,7 @@
-version: '3.9'
-
-services:
+dservices:
 
   backend:
-
     build: .
-
     container_name: sentinelops-backend
 
     ports:
@@ -17,11 +13,13 @@ services:
     volumes:
       - .:/app
 
+    depends_on:
+      - db
+
     restart: always
 
-    db:
+  db:
     image: postgres:15
-
     container_name: sentinelops-db
 
     environment:
@@ -29,13 +27,13 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: sentinelops
 
-      ports:
-        - "5432:5432"
+    ports:
+      - "5432:5432"
 
-      volumes:
-         - postgres_data:/var/lib/postgresql/data
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-          restart: always
+    restart: always
 
-  volumes:
-    postgres_data:
+volumes:
+  postgres_data:

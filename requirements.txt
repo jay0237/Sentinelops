@@ -33,6 +33,7 @@ passlib==1.7.4
 phonenumbers==9.0.30
 preshed==3.0.13
 presidio_analyzer==2.2.360
+prometheus_client==0.25.0
 psycopg2-binary==2.9.12
 pyasn1==0.6.3
 pydantic==2.13.4
