@@ -18,3 +18,24 @@ services:
       - .:/app
 
     restart: always
+
+    db:
+    image: postgres:15
+
+    container_name: sentinelops-db
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: sentinelops
+
+      ports:
+        - "5432:5432"
+
+      volumes:
+         - postgres_data:/var/lib/postgresql/data
+
+          restart: always
+
+  volumes:
+    postgres_data:
