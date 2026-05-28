@@ -180,6 +180,8 @@ def scan_ai_prompt(
     api_key: str = Depends(verify_api_key)
 ):
 
+    REQUEST_COUNT.inc()
+
     text = prompt.get("text", "")
 
     result = scan_prompt(prompt["text"])
@@ -303,12 +305,12 @@ def admin_stats(
         "medium_threats" : medium_threats
     }
 
-    @app.get("/metrics")
-    def metrics():
+@app.get("/metrics")
+def metrics():
 
-        return Response(
-            generate_latest(),
-            media_type="text/plain"
-        )
+    return Response(
+        generate_latest(),
+        media_type="text/plain"
+    )
 
         
