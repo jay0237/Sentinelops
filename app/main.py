@@ -36,7 +36,6 @@ app.state.limiter = limiter
 
 app.add_middleware(SlowAPIMiddleware)
 
-app.add_middleware(SlowAPIMiddleware)
 from app.utils.security import (
     hash_password,
     verify_password
@@ -45,12 +44,20 @@ from app.utils.security import (
 from app.utils.auth import create_access_token
 
 
-app = FastAPI()
-
 REQUEST_COUNT = Counter(
-    "sentinelops_api_requests_total",
-    "Total API Requestes"
+     "sentinelops_api_requests_total",
+     "Total API Requestes"
 )
+
+HIGH_THREAT_COUNT = Counter(
+        "sentinelops_high_threat_total",
+        "Total high threat prompts detected"
+    )
+
+SAFE_PROMPT_COUNT = Counter(
+        "sentinelops_safe_prompt_total",
+        "Total safe prompts"
+    )
 
 app.add_middleware(
     CORSMiddleware,
@@ -158,12 +165,10 @@ def login_user(
         "token_type": "bearer"
     }
 
-
 @app.get("/profile")
 def get_profile(
     current_user: User = Depends(get_current_user)
 ):
-
     return {
         "id": current_user.id,
         "username": current_user.username,
@@ -178,13 +183,19 @@ def scan_ai_prompt(
     prompt: dict,
     db: Session = Depends(get_db),
     api_key: str = Depends(verify_api_key)
-):
+):  
+
 
     REQUEST_COUNT.inc()
 
     text = prompt.get("text", "")
 
-    result = scan_prompt(prompt["text"])
+    result = scan_prompt(text)
+
+    if not result["safe"]:
+        HIGH_THREAT_COUNT.inc()
+    else:
+        SAFE_PROMPT_COUNT.inc()
 
     log = PromptLog(
         prompt=text,
@@ -201,7 +212,6 @@ def scan_ai_prompt(
 def get_analytics(
     db: Session = Depends(get_db)
 ):
-
     total_prompts = db.query(PromptLog).count()
 
     safe_prompts = db.query(PromptLog).filter(
@@ -212,15 +222,13 @@ def get_analytics(
         PromptLog.status == "blocked"
     ).count()
 
+    high_threats = blocked_prompts
+
     return {
         "total_prompts": total_prompts,
         "safe_prompts": safe_prompts,
         "blocked_prompts": blocked_prompts,
-        "high_threats": high_threats,
-        "security_score": (
-            safe_prompts / total_prompts *100
-            if total_prompts > 0 else 100
-        )
+        "high_threats": high_threats
     }
 
 @app.get("/logs")
@@ -239,15 +247,16 @@ def get_logs(
 
     return logs
 
-    @app.get("/export-logs")
-    def export_logs(
-        db:Session = Depends(get_db)
-    ):
-     logs = db.query(PromptLog).all()
 
-     exported_logs = []
+@app.get("/export-injection")
+def export_logs(
+    db: Session = Depends(get_db)
+):
+    logs = db.query(PromptLog).all()
 
-     for log in logs:
+    exported_logs = []
+
+    for log in logs:
 
         exported_logs.append({
             "id": log.id,
@@ -256,27 +265,28 @@ def get_logs(
             "reason": log.reason
         })
 
-        return {
-            "logs": exported_logs
-        }
+    return {
+        "logs": exported_logs
+    }
 
 @app.post("/detect-pii")
 def detect_pii_endpoint(data: dict):
 
-        result = detect_pii(data["text"])
+    result = detect_pii(data["text"])
 
-        return {
-            "pii_detected": result
-        }
+    return {
+        "pii_detected": result
+    }
 
-        @app.post("/detect-injection")
-        def detect_injection(data: dict):
 
-            result = detect_prompt_injection(
-                data["text"]
-                )
+@app.post("/detect-injection")
+def detect_injection(data: dict):
 
-            return result
+    result = detect_prompt_injection(
+        data["text"]
+        )
+
+    return result
 
 @app.get("/admin/stats")
 def admin_stats(
@@ -301,8 +311,7 @@ def admin_stats(
         "total_logs" : total_logs,
         "blocked_logs" : blocked_logs,
         "safe_logs" : safe_logs,
-        "high_threats" : high_threats,
-        "medium_threats" : medium_threats
+        "high_threats" : high_threats
     }
 
 @app.get("/metrics")
@@ -312,5 +321,3 @@ def metrics():
         generate_latest(),
         media_type="text/plain"
     )
-
-        
