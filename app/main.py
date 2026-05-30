@@ -25,9 +25,19 @@ from slowapi.middleware import SlowAPIMiddleware
 from fastapi import Request
 from fastapi.responses import Response
 from prometheus_client import Counter, generate_latest
+from prometheus_client import Histogram
 
 app = FastAPI()
 
+REQUEST_COUNT = Counter(
+    "sentinelops_api_requests_total",
+    "Total API Requests"
+)
+
+REQUEST_DURATION = Histogram(
+    "sentinelops_request_duration_seconds",
+    "Duration of API requests in seconds"
+)
 
 
 limiter = Limiter(key_func=get_remote_address)
@@ -42,12 +52,6 @@ from app.utils.security import (
 )
 
 from app.utils.auth import create_access_token
-
-
-REQUEST_COUNT = Counter(
-     "sentinelops_api_requests_total",
-     "Total API Requestes"
-)
 
 HIGH_THREAT_COUNT = Counter(
         "sentinelops_high_threat_total",
@@ -175,6 +179,7 @@ def get_profile(
         "email": current_user.email
     }
 
+import time
 
 @app.post("/scan")
 @limiter.limit("5/minute")
@@ -183,8 +188,9 @@ def scan_ai_prompt(
     prompt: dict,
     db: Session = Depends(get_db),
     api_key: str = Depends(verify_api_key)
-):  
+):
 
+    start_time = time.time()
 
     REQUEST_COUNT.inc()
 
@@ -205,6 +211,10 @@ def scan_ai_prompt(
 
     db.add(log)
     db.commit()
+
+    REQUEST_DURATION.observe(
+        time.time() - start_time
+    )
 
     return result
 
