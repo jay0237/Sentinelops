@@ -208,6 +208,9 @@ def scan_ai_prompt(
 
     result = scan_prompt(text)
 
+    print(f"Scan result: {result}")
+    result = scan_prompt(text)
+
     if result["safe"]:
         SAFE_PROMPT_COUNT.inc()
     else:
