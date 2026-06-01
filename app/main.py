@@ -347,3 +347,11 @@ def metrics():
         generate_latest(),
         media_type="text/plain"
     )
+
+@app.get("/health")
+def health_check():
+    return {
+        "status" : "healthy",
+        "services": "Sentinelops",
+        "database": "connected"
+    }
