@@ -271,6 +271,18 @@ function Dashboard() {
     <p className="text-green-400 font-semibold">
         System Status: SECURE
     </p>
+
+    <div className="grid grid-cols-3 gap-4 mt-4">
+        <div className="bg-slate-900 p-4 rounded-lg">
+            <p className="text-gray-400">Requests</p>
+            <h3 className="text-2xl font-bold">
+                {analytics?.total_prompts || 0}
+            </h3>
+        </div>
+
+        <div className="bg-slate-900 p-4 rounded-lg">
+            
+    </div>
 </div>
 
 export default Dashboard;
