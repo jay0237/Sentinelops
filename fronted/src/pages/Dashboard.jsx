@@ -281,9 +281,20 @@ function Dashboard() {
         </div>
 
         <div className="bg-slate-900 p-4 rounded-lg">
-            
+            <p className="text-gray-400">Blocked</p>
+            <h3 className="text-2xl font-bold text-red-500">
+                {analytics?.blocked_prompts || 0}
+            </h3>
+        </div>
+
+        <div className="bg-slate-900 p-4 rounded-lg">
+            <p className="text-gray-400">High Threats</p>
+            <h3 className="text-2xl font-bold text-yellow-400">
+                {analytics?.high_threats || 0}
+            </h3>
+        </div>
     </div>
 </div>
 
-export default Dashboard;
 
+export default Dashboard;
