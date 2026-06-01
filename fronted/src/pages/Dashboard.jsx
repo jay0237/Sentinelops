@@ -263,4 +263,15 @@ function Dashboard() {
     );
 }
 
+<div className="mb-8 bg-gradient-to-r from-slate-800 to-slate-700 p-6 rounded-2xl shadow-xl">
+    <h2 className="text-3xl font-bold mb-2">
+        SeninelOps Security Center
+    </h2>
+
+    <p className="text-green-400 font-semibold">
+        System Status: SECURE
+    </p>
+</div>
+
 export default Dashboard;
+
