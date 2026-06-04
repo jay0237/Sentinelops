@@ -259,6 +259,7 @@ def get_analytics(
 
 @app.get("/logs")
 def get_logs(
+    limit: int = 20,
     status: str = None,
     db: Session = Depends(get_db)
 ):
