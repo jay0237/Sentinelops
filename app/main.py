@@ -265,15 +265,30 @@ def get_logs(
 ):
 
     query = db.query(PromptLog)
+
     if status:
         query = query.filter(
             PromptLog.status == status
         )
 
-    logs = query.all()
+        logs = (
+            query 
+            .order_by(PromptLog.id.desc())
+            .limit(limit)
+            .all()
+        )
 
-    return logs
+        return [
+            {
+                "id": log.id,
+                "prompt": log.prompt,
+                "status": log.status,
+                "reason": log.reason
+            }
+            for log in logs
+        ]
 
+    
 
 @app.get("/export-injection")
 def export_logs(
