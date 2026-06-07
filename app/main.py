@@ -200,6 +200,34 @@ def scan_ai_prompt(
     api_key: str = Depends(verify_api_key)
 ):
 
+    text = text.lower()
+
+    if "malware" in text:
+        return {
+            "safe": False,
+            "threat_level": "critical",
+            "reason": "Malware Activity"
+        }
+        if "Bypass authentication" in text:
+            return {
+                "safe": False,
+                "threat_level": "high",
+                "reason": "Authentication Bypass"
+            }
+
+        if "ignore previous instruction" in text:
+            return {
+                "safe": False,
+                "threat_level": "high",
+                "reason": "Instruction Ignore"
+            }
+
+        return {
+            "safe": True,
+            "threat_level": "low",
+            "reason": "Prompt is Safe"
+        }
+
     start_time = time.time()
 
     REQUEST_COUNT.inc()
