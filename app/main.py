@@ -436,3 +436,22 @@ async def scan_file(
         "filename": file.filename,
         "scan_result": result
     }
+
+@app.get("/threat-summary")
+def threat_summary( db: Session = Depends (get_db)):
+
+    return {
+        "low": db.query(PromptLog).filter(
+            PromptLog.reason == "Prompt is Safe"
+        
+        ).count(),
+
+        "high": db.query(PromptLog).filter(
+            PromptLog.reason.contains("Authentication")
+
+        ).count(),
+
+        "critical": db.query(PromptLog).filter(
+            PromptLog.reason.contains("Malware")
+        ).count()
+    }
