@@ -420,18 +420,19 @@ def get_stats(db: Session = Depends(get_db)):
         "high_threat": high_threat
     }
 
-@app.post("scan-file")
+
+@app.post("/scan-file")
 async def scan_file(
     file: UploadFile = File(...)
 ):
 
-   content = await file.read()
+    content = await file.read()
 
-   text = content.decode("utf-8")
+    text = content.decode("utf-8")
 
     result = scan_prompt(text)
 
     return {
         "filename": file.filename,
-        "scan_result" :result
+        "scan_result": result
     }
