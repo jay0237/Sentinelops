@@ -263,38 +263,4 @@ function Dashboard() {
     );
 }
 
-<div className="mb-8 bg-gradient-to-r from-slate-800 to-slate-700 p-6 rounded-2xl shadow-xl">
-    <h2 className="text-3xl font-bold mb-2">
-        SeninelOps Security Center
-    </h2>
-
-    <p className="text-green-400 font-semibold">
-        System Status: SECURE
-    </p>
-
-    <div className="grid grid-cols-3 gap-4 mt-4">
-        <div className="bg-slate-900 p-4 rounded-lg">
-            <p className="text-gray-400">Requests</p>
-            <h3 className="text-2xl font-bold">
-                {analytics?.total_prompts || 0}
-            </h3>
-        </div>
-
-        <div className="bg-slate-900 p-4 rounded-lg">
-            <p className="text-gray-400">Blocked</p>
-            <h3 className="text-2xl font-bold text-red-500">
-                {analytics?.blocked_prompts || 0}
-            </h3>
-        </div>
-
-        <div className="bg-slate-900 p-4 rounded-lg">
-            <p className="text-gray-400">High Threats</p>
-            <h3 className="text-2xl font-bold text-yellow-400">
-                {analytics?.high_threats || 0}
-            </h3>
-        </div>
-    </div>
-</div>
-
-
 export default Dashboard;
