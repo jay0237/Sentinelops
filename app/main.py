@@ -26,6 +26,7 @@ from fastapi import Request
 from fastapi.responses import Response
 from prometheus_client import Counter, generate_latest
 from prometheus_client import Histogram
+from fastapi import UploadFile, File 
 
 app = FastAPI()
 
@@ -200,53 +201,48 @@ def scan_ai_prompt(
     api_key: str = Depends(verify_api_key)
 ):
 
-    text = text.lower()
-
-    if "malware" in text:
-        return {
-            "safe": False,
-            "threat_level": "critical",
-            "reason": "Malware Activity"
-        }
-        if "Bypass authentication" in text:
-            return {
-                "safe": False,
-                "threat_level": "high",
-                "reason": "Authentication Bypass"
-            }
-
-        if "ignore previous instruction" in text:
-            return {
-                "safe": False,
-                "threat_level": "high",
-                "reason": "Instruction Ignore"
-            }
-
-        return {
-            "safe": True,
-            "threat_level": "low",
-            "reason": "Prompt is Safe"
-        }
-
     start_time = time.time()
 
     REQUEST_COUNT.inc()
 
-    text = prompt.get("text", "")
+    text = prompt.get("text", "").lower()
 
-    result = scan_prompt(text)
+    if "malware" in text:
+        result = {
+            "safe": False,
+            "threat_level": "critical",
+            "reason": "Malware Activity"
+        }
 
-    print(f"Scan result: {result}")
-    result = scan_prompt(text)
+    elif "bypass authentication" in text:
+        result = {
+            "safe": False,
+            "threat_level": "high",
+            "reason": "Authentication Bypass"
+        }
+
+    elif "ignore previous instructions" in text:
+        result = {
+            "safe": False,
+            "threat_level": "medium",
+            "reason": "Prompt Injection"
+        }
+
+    else:
+        result = {
+            "safe": True,
+            "threat_level": "low",
+            "reason": "Prompt is Safe"
+        }
 
     if result["safe"]:
         SAFE_PROMPT_COUNT.inc()
     else:
         BLOCKED_PROMPT_COUNT.inc()
 
-    if result["threat_level"] == "high":
+    if result["threat_level"] in ["high", "critical"]:
         HIGH_THREAT_COUNT.inc()
-    
+
     log = PromptLog(
         prompt=text,
         status="safe" if result["safe"] else "blocked",
@@ -261,6 +257,7 @@ def scan_ai_prompt(
     )
 
     return result
+
 
 @app.get("/analytics")
 def get_analytics(
@@ -299,23 +296,22 @@ def get_logs(
             PromptLog.status == status
         )
 
-        logs = (
-            query 
-            .order_by(PromptLog.id.desc())
-            .limit(limit)
-            .all()
-        )
+    logs = (
+        query
+        .order_by(PromptLog.id.desc())
+        .limit(limit)
+        .all()
+    )
 
-        return [
-            {
-                "id": log.id,
-                "prompt": log.prompt,
-                "status": log.status,
-                "reason": log.reason
-            }
-            for log in logs
-        ]
-
+    return [
+        {
+            "id": log.id,
+            "prompt": log.prompt,
+            "status": log.status,
+            "reason": log.reason
+        }
+        for log in logs
+    ]
     
 
 @app.get("/export-injection")
@@ -422,4 +418,20 @@ def get_stats(db: Session = Depends(get_db)):
         "safe": safe,
         "blocked": blocked,
         "high_threat": high_threat
+    }
+
+@app.post("scan-file")
+async def scan_file(
+    file: UploadFile = File(...)
+):
+
+   content = await file.read()
+
+   text = content.decode("utf-8")
+
+    result = scan_prompt(text)
+
+    return {
+        "filename": file.filename,
+        "scan_result" :result
     }
