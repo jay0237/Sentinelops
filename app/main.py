@@ -55,7 +55,6 @@ REQUEST_DURATION = Histogram(
     "Duration of API requests in seconds"
 )
 
-
 limiter = Limiter(key_func=get_remote_address)
 
 app.state.limiter = limiter
@@ -428,12 +427,13 @@ async def scan_file(
 
     content = await file.read()
 
-    text = content.decode("utf-8")
+    text = content.decode("utf-8", errors="ignore")
 
     result = scan_prompt(text)
 
     return {
         "filename": file.filename,
+        "result": result,
         "scan_result": result
     }
 

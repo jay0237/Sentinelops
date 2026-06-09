@@ -8,6 +8,9 @@ function Dashboard() {
 
     const [prompt, setPrompt] = useState("");
     const [result, setResult] = useState(null);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [fileResult, setFileResult] = useState(null);
+
 
     const [analytics, setAnalytics] = useState(null);
 
@@ -93,6 +96,35 @@ function Dashboard() {
         }
     };
 
+    const scanFile = async () => {
+
+        if (!selectedFile) return;
+
+        const formData = new FormData();
+
+        formData.append("file", selectedFile);
+
+        try {
+
+            const response = await API.post(
+                "/scan-file",
+                formData,
+                {
+                    headers: {
+                        "x-api-key": "sentinelops-secret-key"
+                    }
+                }
+            );
+
+            setFileResult(response.data);
+
+        } catch (error) {
+
+            console.log(error);
+
+        }
+    };
+
     return (
 
         <div className="min-h-screen bg-slate-900 text-white p-10">
@@ -160,7 +192,64 @@ function Dashboard() {
 
             </div>
 
-            {result && (
+            <div className="mt-10 bg-slate-800 p-6 rounded-xl shadow-lg max-w-3xl">
+
+                <h2 className="text-xl font-bold mb-4">
+                    File Security Scan
+                </h2>
+
+                <input
+                    type="file"
+                    onChange={(e) => setSelectedFile(e.target.files[0])}
+                    className="mb-4"
+                />
+
+                <button
+                    onClick={scanFile}
+                    className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold"
+                >
+                    Scan File
+                </button>
+
+            </div>
+
+            {fileResult && (
+
+                (() => {
+                    const scanResult = fileResult.result || fileResult.scan_result;
+
+                    return (
+
+                <div className="mt-10 bg-slate-800 p-6 rounded-xl shadow-lg max-w-3xl">
+
+                    <h2 className="text-2xl font-bold mb-4">
+                        File Scan Result
+                    </h2>
+
+                    <div className="space-y-3">
+
+                        <p>
+                            <strong>File:</strong> {fileResult.filename}
+                        </p>
+
+                        <p>
+                            <strong>Threat Level:</strong> {scanResult.threat_level}
+                        </p>
+
+                        <p>
+                            <strong>Reason:</strong> {scanResult.reason}
+                        </p>
+
+                    </div>
+
+                </div>
+
+                    );
+                })()
+
+            )}
+
+            {result && (        
 
                 <div className="mt-10 bg-slate-800 p-6 rounded-xl shadow-lg max-w-3xl">
 
