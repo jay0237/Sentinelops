@@ -8,6 +8,7 @@ from app.config.deps import get_db
 from app.models.user import User
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.security_rules import RULES
 from app.schemas.user import UserCreate
 from app.config.auth_deps import get_current_user
 from app.middleware.guard import scan_prompt
@@ -205,34 +206,38 @@ def scan_ai_prompt(
     REQUEST_COUNT.inc()
 
     text = prompt.get("text", "").lower()
+    result = None
 
-    if "malware" in text:
-        result = {
-            "safe": False,
-            "threat_level": "critical",
-            "reason": "Malware Activity"
-        }
+    for rule in RULES:
+        if rule["keyword"] in text.lower():
+            result = {
+                "safe": False,
+                "threat_level": rule["severity"],
+                "reason": rule["reason"]
+            }
+            break
 
-    elif "bypass authentication" in text:
-        result = {
-            "safe": False,
-            "threat_level": "high",
-            "reason": "Authentication Bypass"
-        }
+    if result is None:
+        if "bypass authentication" in text:
+            result = {
+                "safe": False,
+                "threat_level": "high",
+                "reason": "Authentication Bypass"
+            }
 
-    elif "ignore previous instructions" in text:
-        result = {
-            "safe": False,
-            "threat_level": "medium",
-            "reason": "Prompt Injection"
-        }
+        elif "ignore previous instructions" in text:
+            result = {
+                "safe": False,
+                "threat_level": "medium",
+                "reason": "Prompt Injection"
+            }
 
-    else:
-        result = {
-            "safe": True,
-            "threat_level": "low",
-            "reason": "Prompt is Safe"
-        }
+        else:
+            result = {
+                "safe": True,
+                "threat_level": "low",
+                "reason": "Prompt is Safe"
+            }
 
     if result["safe"]:
         SAFE_PROMPT_COUNT.inc()
