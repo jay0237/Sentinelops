@@ -18,6 +18,7 @@ from app.utils.pii_scanner import detect_pii
 from app.utils.injection_detector import detect_prompt_injection
 
 from app.config.api_key import verify_api_key
+from app.middleware.security_middleware import SecurityMiddleware
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -30,6 +31,8 @@ from prometheus_client import Histogram
 from fastapi import UploadFile, File 
 
 app = FastAPI()
+
+app.add_middleware(SecurityMiddleware)
 
 REQUEST_COUNT = Counter(
     "sentinelops_api_requests_total",
