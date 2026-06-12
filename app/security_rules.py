@@ -1,17 +1,20 @@
 RULES = [
     {
         "keyword": "malware",
+        "category": "Malware",
         "severity": "critical",
-        "reason": "Malware Activity",
+        "reason": "Malware Activity"
     },
     {
         "keyword": "bypass authentication",
+        "category": "Access Control",
         "severity": "high",
         "reason": "Authentication Bypass"
     },
     {
-        "keyword": "ignore previous instruction",
-        "severity": "medium",
-        "reason":"Prompt Injection"
+        "keyword": "ignore previous instructions",
+        "category": "Prompt Injection",
+        "severity": "high",
+        "reason": "Prompt Injection Attempt"
     }
 ]

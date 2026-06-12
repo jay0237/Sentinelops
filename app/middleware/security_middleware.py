@@ -3,6 +3,8 @@ from fastapi import Request
 from fastapi.response import JSONResponse
 from app.security.rules import RULES
 import json
+from app.models.prompt_log import PromptLog
+from app.config.database import SessionLocal
 
 class SecurityMiddleware(BaseHTTPMiddleware):
 
@@ -22,16 +24,29 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
             for rule in RULES:
 
-                if rule["keyword"] in text:
+    if rule["keyword"] in text:
 
-                    return JSONResponse(
-                        status_code=403,
-                        content={
-                            "blocked": True,
-                            "reason": rule["reason"],
-                            "severity": rule["severity"]
-                        }
-                    )
+        db = SessionLocal()
+
+        log = PromptLog(
+            prompt=text,
+            status="blocked",
+            reason=rule["reason"]
+        )
+
+        db.add(log)
+        db.commit()
+        db.close()
+
+        return JSONResponse(
+            status_code=403,
+            content={
+                "blocked": True,
+                "category": rule["category"],
+                "reason": rule["reason"],
+                "severity": rule["severity"]
+            }
+        )
 
                     except :
                         pass
