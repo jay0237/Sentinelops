@@ -463,3 +463,26 @@ def threat_summary( db: Session = Depends (get_db)):
             PromptLog.reason.contains("Malware")
         ).count()
     }
+
+@app.get("/threat-categories")
+def threat_categories(
+    db: Session = Depends(get_db)
+):
+
+    malware = db.query(PromptLog).filter(
+    PromptLog.reason.contains("Malware")
+    ).count()
+
+    prompt_injection = db.query(PromptLog).filter(
+    PromptLog.reason.contains("Prompt Injection")
+    ).count()
+
+    access_control = db.query(PromptLog).filter(
+    PromptLog.reason.contains("Access Control")
+    ).count()
+
+    return {
+    "malware": malware,
+    "prompt_injection": prompt_injection,
+    "access_control": access_control
+}
