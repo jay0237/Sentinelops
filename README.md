@@ -28,6 +28,7 @@ The project focuses on building everything step-by-step manually instead of rely
 #fronted:
 *React and Typescript
 *real time security (working)
+*add Threat Allocation
 
 ## Authentication System
 
