@@ -495,3 +495,18 @@ def generate_api_key(
     db: Session = Depends(get_db)
 ):
 
+    new_key = secrets.token_urlsafe(32)
+
+    api_key = ApiKey(
+        key=new_key,
+        owner=owner
+    )
+
+    db.add(api_key)
+    db.commit()
+    db.refresh(api_key)
+
+    return {
+        "api_key": new_key,
+        "owner": owner
+    }
