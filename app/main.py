@@ -29,6 +29,8 @@ from fastapi.responses import Response
 from prometheus_client import Counter, generate_latest
 from prometheus_client import Histogram
 from fastapi import UploadFile, File 
+from app.models.api_key import ApiKey
+import secrets
 
 app = FastAPI()
 
@@ -486,3 +488,10 @@ def threat_categories(
     "prompt_injection": prompt_injection,
     "access_control": access_control
 }
+
+@app.post("/generate-api-key")
+def generate_api_key(
+    owner: str,
+    db: Session = Depends(get_db)
+):
+
