@@ -1,5 +1,7 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
 from datetime import datetime
+from sqlalchemy import DateTime
+from datetime import datetime
 
 from app.config.base import Base
 
@@ -15,9 +17,16 @@ class PromptLog (Base):
 
     reason = Column(String)
 
+    severity = Column(String)
+
     created_at = Column(
         DateTime,
         default=datetime.utcnow
     )
+
+    timestamp = Column(
+        DateTime,
+        default=datetime,utcnow
+        )
 
 
