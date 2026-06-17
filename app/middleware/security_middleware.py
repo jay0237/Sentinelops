@@ -1,10 +1,12 @@
 from starlette.middleware.base import BaseHTTPMiddleware
 from fastapi import Request
-from fastapi.response import JSONResponse
+from fastapi.responses import JSONResponse
 from app.security.rules import RULES
 import json
+
 from app.models.prompt_log import PromptLog
 from app.config.database import SessionLocal
+
 
 class SecurityMiddleware(BaseHTTPMiddleware):
 
@@ -17,40 +19,46 @@ class SecurityMiddleware(BaseHTTPMiddleware):
 
         if request.method == "POST":
 
-            body = await request.body()
+            try:
+                body = await request.body()
 
-            data = json.loads(body)
-            text = data.get("text", "").lower()
+                data = json.loads(body)
 
-            for rule in RULES:
+                text = data.get(
+                    "text",
+                    ""
+                ).lower()
 
-    if rule["keyword"] in text:
+                for rule in RULES:
 
-        db = SessionLocal()
+                    if rule["keyword"] in text:
 
-        log = PromptLog(
-            prompt=text,
-            status="blocked",
-            reason=rule["reason"]
-        )
+                        db = SessionLocal()
 
-        db.add(log)
-        db.commit()
-        db.close()
+                        log = PromptLog(
+                            prompt=text,
+                            status="blocked",
+                            reason=rule["reason"],
+                            severity=rule["severity"]
+                        )
 
-        return JSONResponse(
-            status_code=403,
-            content={
-                "blocked": True,
-                "category": rule["category"],
-                "reason": rule["reason"],
-                "severity": rule["severity"]
-            }
-        )
+                        db.add(log)
+                        db.commit()
+                        db.close()
 
-                    except :
-                        pass
-                        
+                        return JSONResponse(
+                            status_code=403,
+                            content={
+                                "blocked": True,
+                                "category": rule["category"],
+                                "reason": rule["reason"],
+                                "severity": rule["severity"]
+                            }
+                        )
+
+            except Exception as e:
+                print(f"Middleware Error: {e}")
+
         response = await call_next(request)
 
         return response

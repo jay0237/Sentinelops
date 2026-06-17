@@ -1,15 +1,13 @@
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from datetime import datetime
-from sqlalchemy import DateTime
+from sqlalchemy import Column, Integer, String, DateTime
 from datetime import datetime
 
 from app.config.base import Base
 
-class PromptLog (Base):
+class PromptLog(Base):
 
     __tablename__ = "prompt_logs"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
 
     prompt = Column(String)
 
@@ -19,14 +17,7 @@ class PromptLog (Base):
 
     severity = Column(String)
 
-    created_at = Column(
+    timestamp = Column(
         DateTime,
         default=datetime.utcnow
     )
-
-    timestamp = Column(
-        DateTime,
-        default=datetime,utcnow
-        )
-
-
