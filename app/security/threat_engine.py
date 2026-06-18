@@ -10,4 +10,13 @@ def scan_threat(text):
             return {
                 "safe": False,
                 "category": rule["severity"],
+                "reason": rule["reason"]
+                "category": rule["category"]
+            }
+
+            return {
+                "safe": True,
+                "severity": "low",
+                "reason": "No Threat Detected",
+                "category": "None"
             }
