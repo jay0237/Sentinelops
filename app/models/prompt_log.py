@@ -17,6 +17,8 @@ class PromptLog(Base):
 
     severity = Column(String)
 
+    category = Column(String)
+
     timestamp = Column(
         DateTime,
         default=datetime.utcnow

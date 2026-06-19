@@ -253,9 +253,11 @@ def scan_ai_prompt(
         HIGH_THREAT_COUNT.inc()
 
     log = PromptLog(
-        prompt=text,
-        status="safe" if result["safe"] else "blocked",
-        reason=result["reason"]
+    prompt=text,
+    status="blocked",
+    reason=result["reason"],
+    severity=result["severity"],
+    category=result["category"]
     )
 
     db.add(log)
