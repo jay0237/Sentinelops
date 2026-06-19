@@ -512,3 +512,12 @@ def generate_api_key(
         "api_key": new_key,
         "owner": owner
     }
+
+    @app.get("/threat-categories")
+    def threat_categories(db: Session = Depends (get_db)):
+
+        logs = db.query(PromptLog).all()
+
+        category = {}
+
+        
