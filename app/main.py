@@ -520,4 +520,12 @@ def generate_api_key(
 
         category = {}
 
-        
+        for log in logs:
+
+            if log.category:
+
+                categories[log.category] = (
+                    categories.get(log.category, 0) + 1
+                )
+
+                return categories
