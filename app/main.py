@@ -256,7 +256,7 @@ def scan_ai_prompt(
     prompt=text,
     status="blocked",
     reason=result["reason"],
-    severity=result["severity"],
+    severity=result.get("severity"),
     category=result["category"]
     )
 
