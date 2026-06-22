@@ -286,11 +286,20 @@ def get_analytics(
 
     high_threats = blocked_prompts
 
+    malware_count= db.query(PromptLog).filter(PromptLog.reason == "Malware Detected").count()
+
+    injection_count = db.query(PromptLog).filter(PromptLog.reason == "Prompt Injection").count()
+
+    auth_bypass_count = db.query(PromptLog).filter(PromptLog.reason == "Authentication Bypass").count()
+
     return {
         "total_prompts": total_prompts,
         "safe_prompts": safe_prompts,
         "blocked_prompts": blocked_prompts,
-        "high_threats": high_threats
+        "high_threats": high_threats,
+        "malware_count": malware_count,
+        "injection_count": injection_count,
+        "auth_bypass_count": auth_bypass_count
     }
 
 @app.get("/logs")
