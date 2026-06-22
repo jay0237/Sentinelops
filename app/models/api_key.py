@@ -1,7 +1,7 @@
-from sqlchemy import Column,Integer, String,Boolean
+from sqlalchemy import Column, Integer, String, Boolean
 from app.config.base import Base
 
-class APIKey(Base):
+class ApiKey(Base):
 
     __tablename__ = "api_keys"
 
