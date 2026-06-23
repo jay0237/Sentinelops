@@ -522,19 +522,21 @@ def generate_api_key(
         "owner": owner
     }
 
-    @app.get("/threat-categories")
-    def threat_categories(db: Session = Depends (get_db)):
 
-        logs = db.query(PromptLog).all()
+@app.get("/threat-history")
+def threat_history(db: Session = Depends(get_db)):
+    logs = db.query(PromptLog).all()
 
-        category = {}
+    history = []
 
-        for log in logs:
+    for log in logs:
+        history.append({
+            "id": log.id,
+            "prompt": log.prompt,
+            "status": log.status,
+            "reason": log.reason,
+            "severity": log.severity,
+            "category": log.category
+        })
 
-            if log.category:
-
-                categories[log.category] = (
-                    categories.get(log.category, 0) + 1
-                )
-
-                return categories
+    return history
