@@ -540,3 +540,24 @@ def threat_history(db: Session = Depends(get_db)):
         })
 
     return history
+
+@app.get("/threat-summary")
+def threat_summary(db: Session - Depends(get_db)):
+
+    malware = db.query(PromptLog).filter(
+        PromptLog.category == "Malware"
+    ).count()
+
+    injection = db.query(PromptLog).filter(
+        PromptLog.category == "Prompt Injection"
+    ).count()
+
+    auth_bypass = db.query(PromptLog).filter(
+        PromptLog.category == "Authentication Bypass"
+    ).count()
+
+    return{
+        "malware": malware,
+        "prompt_injection" : injection,
+        "authentication_bypass" : auth_bypass
+    }
