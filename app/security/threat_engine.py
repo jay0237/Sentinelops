@@ -12,12 +12,14 @@ def scan_threat(text):
                 "safe": False,
                 "severity": rule["severity"],
                 "reason": rule["reason"],
-                "category": rule["category"]
+                "category": rule["category"],
+                "risk_score": calculate_risk(rule["severity"])
             }
 
     return {
         "safe": True,
         "severity": "low",
         "reason": "No Threat Detected",
-        "category": "None"
+        "category": "None",
+        "risk_score": 0
     }
