@@ -23,3 +23,4 @@ def scan_threat(text):
         "category": "None",
         "risk_score": 0
     }
+    
