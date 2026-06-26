@@ -146,6 +146,10 @@ function Dashboard({ theme, setTheme }) {
         setTheme((current) => (current === "dark" ? "light" : "dark"));
     };
 
+    const scanResult = fileResult?.result || fileResult?.scan_result;
+    const isThreatening =
+        scanResult?.threat_level === "high" || scanResult?.threat_level === "critical";
+
     return (
 
         <div className={
@@ -291,13 +295,7 @@ function Dashboard({ theme, setTheme }) {
 
                 </div>
 
-            {fileResult && (
-
-                (() => {
-                    const scanResult = fileResult.result || fileResult.scan_result;
-                    const isThreatenening = scanResult.threat_level === "high" || scanResult.threat_level === "critical";
-
-                    return (
+            {scanResult && (
 
                 <div className={`p-8 rounded-2xl shadow-xl mb-8 ${cardBaseClass}`}>
 
@@ -313,15 +311,15 @@ function Dashboard({ theme, setTheme }) {
 
                         <div className="flex items-center justify-between">
                             <p className={tableMutedClass}><strong>Threat Level:</strong></p>
-                            <p className={`font-bold text-lg ${isThreatenening ? 'text-red-400' : 'text-green-400'}`}>
+                            <p className={`font-bold text-lg ${isThreatening ? 'text-red-400' : 'text-green-400'}`}>
                                 {scanResult.threat_level?.toUpperCase()}
                             </p>
                         </div>
 
                         <div className="flex items-center justify-between">
                             <p className={tableMutedClass}><strong>Status:</strong></p>
-                            <p className={`font-semibold ${isThreatenening ? 'text-red-400' : 'text-green-400'}`}>
-                                {isThreatenening ? "THREAT DETECTED" : "SAFE"}
+                            <p className={`font-semibold ${isThreatening ? 'text-red-400' : 'text-green-400'}`}>
+                                {isThreatening ? "THREAT DETECTED" : "SAFE"}
                             </p>
                         </div>
 
@@ -332,9 +330,6 @@ function Dashboard({ theme, setTheme }) {
                     </div>
 
                 </div>
-
-                    );
-                })()
 
             )}
 
