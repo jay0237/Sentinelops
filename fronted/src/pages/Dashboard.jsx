@@ -465,6 +465,8 @@ function Dashboard({ theme, setTheme }) {
             </div>
 
         </div>
+
+        </div>
     );
 }
 

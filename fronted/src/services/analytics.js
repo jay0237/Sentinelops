@@ -6,7 +6,7 @@ export const fetchAnalytics = async () => {
         "/analytics",
         {
             headers:{
-                "x-api-key": "Sentinelops-secret-key"
+                "x-api-key": "sentinelops-secret-key"
             }
         }
     );

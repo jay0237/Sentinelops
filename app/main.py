@@ -218,7 +218,8 @@ def scan_ai_prompt(
             result = {
                 "safe": False,
                 "threat_level": rule["severity"],
-                "reason": rule["reason"]
+                "reason": rule["reason"],
+                "category": rule["category"]
             }
             break
 
@@ -227,21 +228,24 @@ def scan_ai_prompt(
             result = {
                 "safe": False,
                 "threat_level": "high",
-                "reason": "Authentication Bypass"
+                "reason": "Authentication Bypass",
+                "category": "Access Control"
             }
 
         elif "ignore previous instructions" in text:
             result = {
                 "safe": False,
                 "threat_level": "medium",
-                "reason": "Prompt Injection"
+                "reason": "Prompt Injection",
+                "category": "Prompt Injection"
             }
 
         else:
             result = {
                 "safe": True,
                 "threat_level": "low",
-                "reason": "Prompt is Safe"
+                "reason": "Prompt is Safe",
+                "category": "Safe"
             }
 
     if result["safe"]:
@@ -253,11 +257,11 @@ def scan_ai_prompt(
         HIGH_THREAT_COUNT.inc()
 
     log = PromptLog(
-    prompt=text,
-    status="blocked",
-    reason=result["reason"],
-    severity=result.get("severity"),
-    category=result["category"]
+        prompt=text,
+        status="safe" if result["safe"] else "blocked",
+        reason=result["reason"],
+        severity=result.get("threat_level"),
+        category=result.get("category", "General")
     )
 
     db.add(log)
@@ -542,7 +546,7 @@ def threat_history(db: Session = Depends(get_db)):
     return history
 
 @app.get("/threat-summary")
-def threat_summary(db: Session - Depends(get_db)):
+def threat_summary(db: Session = Depends(get_db)):
 
     malware = db.query(PromptLog).filter(
         PromptLog.category == "Malware"
