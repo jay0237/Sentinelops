@@ -1,6 +1,9 @@
 from app.security.rules import RULES
+from app.security.redaction import redact_pii
 
 def scan_threat(text):
+
+    original_text = text
 
     text = text.lower()
 
