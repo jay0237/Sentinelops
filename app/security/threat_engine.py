@@ -5,6 +5,10 @@ def scan_threat(text):
 
     original_text = text
 
+    redacted_text = redact_pii(text)
+
+    text = redacted_text.lower()
+
     text = text.lower()
 
     for rule in RULES:
@@ -17,6 +21,8 @@ def scan_threat(text):
                 "reason": rule["reason"],
                 "category": rule["category"],
                 "risk_score": calculate_risk(rule["severity"])
+                "original_text": original_text,
+                "sanitized_text": redacted_text
             }
 
     return {
@@ -24,6 +30,8 @@ def scan_threat(text):
         "severity": "low",
         "reason": "No Threat Detected",
         "category": "None",
-        "risk_score": 0
+        "risk_score": 0,
+        "original_text": original_text,
+        "sanitized_text": redacted_text
     }
     
