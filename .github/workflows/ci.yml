@@ -2,34 +2,33 @@ name: SentinelOps CI
 
 on:
   push:
-   branches: [ main ]
+    branches: [main]
 
-   pull_request:
-      branches: [ main ]
+  pull_request:
+    branches: [main]
 
-    
 jobs:
-    build: 
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
 
-        steps:
-         
-         - name: Checkout Repository
-            uses: actions/checkout@4
-            
-          -name: Set up Python
-            uses: actions/setup-python@v5
-            with:
-                python-version: '3.9'
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-          - name: Install Dependencies
-            run: |
-                python -m pip install --upgrade pip
-                pip install -r requirements.txt
-          -name: Verify Project Imports
-            run: |
-                python -c "import app.main; print('SentinelOps imported successfully')"
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
 
-          -name: Build Docker Image
-          run: |
-              docker build -t sentinelops .
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Verify Project Imports
+        run: |
+          python -c "import app.main; print('SentinelOps imported successfully')"
+
+      - name: Build Docker Image
+        run: |
+          docker build -t sentinelops .
