@@ -18,7 +18,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.9"
 
       - name: Cache pip dependencies
         uses: actions/cache@v4
@@ -73,7 +73,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.9"
 
       - name: Cache pip dependencies
         uses: actions/cache@v4
@@ -85,7 +85,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-          pip install pytest pytest-asyncio httpx
+          pip install black flake8 isort
 
       - name: Run tests
         env:
@@ -128,3 +128,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+
+          - name: Verify Project Imports
+  run: |
+    python -c "import app.main; print('SentinelOps imported successfully')"
