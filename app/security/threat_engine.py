@@ -20,7 +20,7 @@ def scan_threat(text):
                 "severity": rule["severity"],
                 "reason": rule["reason"],
                 "category": rule["category"],
-                "risk_score": calculate_risk(rule["severity"])
+                "risk_score": calculate_risk(rule["severity"]),
                 "original_text": original_text,
                 "sanitized_text": redacted_text
             }

@@ -1,5 +1,6 @@
 from app.security.redaction import redact_pii
 from app.security.threat_engine import scan_threat
+from app.security.risk_score import calculate_risk
 
 def scan(text: str):
     
