@@ -1,5 +1,6 @@
 from app.security.rules import RULES
 from app.security.redaction import redact_pii
+from app.security.risk_score import calculate_risk
 
 def scan_threat(text):
 
@@ -9,7 +10,6 @@ def scan_threat(text):
 
     text = redacted_text.lower()
 
-    text = text.lower()
 
     for rule in RULES:
 
