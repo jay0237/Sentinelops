@@ -9,12 +9,9 @@ from app.config.deps import get_db
 from app.models.user import User
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.security_rules import RULES
 from app.schemas.user import UserCreate
 from app.config.auth_deps import get_current_user
-from app.middleware.guard import scan_prompt
 from app.models.prompt_log import PromptLog
-from sqlalchemy import func
 from app.utils.pii_scanner import detect_pii
 from app.utils.injection_detector import detect_prompt_injection
 
@@ -23,7 +20,6 @@ from app.middleware.security_middleware import SecurityMiddleware
 
 from slowapi import Limiter
 from slowapi.util import get_remote_address
-from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 from fastapi import Request
 from fastapi.responses import Response
@@ -211,57 +207,22 @@ def scan_ai_prompt(
 
     REQUEST_COUNT.inc()
 
-    text = prompt.get("text", "").lower()
-    result = None
-
-    for rule in RULES:
-        if rule["keyword"] in text.lower():
-            result = {
-                "safe": False,
-                "threat_level": rule["severity"],
-                "reason": rule["reason"],
-                "category": rule["category"]
-            }
-            break
-
-    if result is None:
-        if "bypass authentication" in text:
-            result = {
-                "safe": False,
-                "threat_level": "high",
-                "reason": "Authentication Bypass",
-                "category": "Access Control"
-            }
-
-        elif "ignore previous instructions" in text:
-            result = {
-                "safe": False,
-                "threat_level": "medium",
-                "reason": "Prompt Injection",
-                "category": "Prompt Injection"
-            }
-
-        else:
-            result = {
-                "safe": True,
-                "threat_level": "low",
-                "reason": "Prompt is Safe",
-                "category": "Safe"
-            }
+    text = prompt.get("text", "")
+    result = scan(text)
 
     if result["safe"]:
         SAFE_PROMPT_COUNT.inc()
     else:
         BLOCKED_PROMPT_COUNT.inc()
 
-    if result["threat_level"] in ["high", "critical"]:
+    if result["severity"] in ["high", "critical"]:
         HIGH_THREAT_COUNT.inc()
 
     log = PromptLog(
-        prompt=text,
+        prompt=result["original_prompt"],
         status="safe" if result["safe"] else "blocked",
         reason=result["reason"],
-        severity=result.get("threat_level"),
+        severity=result.get("severity"),
         category=result.get("category", "General")
     )
 
@@ -455,7 +416,7 @@ async def scan_file(
 
     text = content.decode("utf-8", errors="ignore")
 
-    result = scan_prompt(text)
+    result = scan(text)
 
     return {
         "filename": file.filename,
