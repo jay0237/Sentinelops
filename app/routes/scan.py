@@ -1,0 +1,101 @@
+import time
+
+from fastapi import APIRouter, Depends, File, Request, UploadFile
+from sqlalchemy.orm import Session
+
+from app.config.api_key import verify_api_key
+from app.config.deps import get_db
+from app.core.observability import (
+    BLOCKED_PROMPT_COUNT,
+    HIGH_THREAT_COUNT,
+    REQUEST_COUNT,
+    REQUEST_DURATION,
+    SAFE_PROMPT_COUNT,
+    limiter,
+)
+from app.models.prompt_log import PromptLog
+from app.security.engine import scan
+from app.utils.injection_detector import detect_prompt_injection
+from app.utils.pii_scanner import detect_pii
+
+router = APIRouter()
+
+
+@router.post("/scan")
+@limiter.limit("5/minute")
+def scan_ai_prompt(
+    request: Request,
+    prompt: dict,
+    db: Session = Depends(get_db),
+    api_key: str = Depends(verify_api_key)
+):
+
+    start_time = time.time()
+
+    REQUEST_COUNT.inc()
+
+    text = prompt.get("text", "")
+    result = scan(text)
+
+    if result["safe"]:
+        SAFE_PROMPT_COUNT.inc()
+    else:
+        BLOCKED_PROMPT_COUNT.inc()
+
+    if result["severity"] in ["high", "critical"]:
+        HIGH_THREAT_COUNT.inc()
+
+    log = PromptLog(
+        prompt=result["original_prompt"],
+        status="safe" if result["safe"] else "blocked",
+        reason=result["reason"],
+        severity=result.get("severity"),
+        category=result.get("category", "General")
+    )
+
+    db.add(log)
+    db.commit()
+
+    REQUEST_DURATION.observe(
+        time.time() - start_time
+    )
+
+    return result
+
+
+@router.post("/scan-file")
+async def scan_file(
+    file: UploadFile = File(...)
+):
+
+    content = await file.read()
+
+    text = content.decode("utf-8", errors="ignore")
+
+    result = scan(text)
+
+    return {
+        "filename": file.filename,
+        "result": result,
+        "scan_result": result
+    }
+
+
+@router.post("/detect-pii")
+def detect_pii_endpoint(data: dict):
+
+    result = detect_pii(data["text"])
+
+    return {
+        "pii_detected": result
+    }
+
+
+@router.post("/detect-injection")
+def detect_injection(data: dict):
+
+    result = detect_prompt_injection(
+        data["text"]
+    )
+
+    return result
