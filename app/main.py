@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
+from app.security.engine import scan
 
 from app.config.database import engine
 from app.config.base import Base
