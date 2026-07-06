@@ -5,7 +5,7 @@ from app.security.risk_score import calculate_risk
 
 def scan(text: str):
 
-    sanitized = redact_pii(text)
+    sanitized = redact_pii(tex)t
 
     threat = scan_threat(sanitized)
 
