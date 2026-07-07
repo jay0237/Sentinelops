@@ -6,4 +6,13 @@ class ThreatRule(BaseModel):
     severity: str
     reason: str
 
-    
+class ThreatRuleCreate(ThreatRule):
+    id: int
+    keyword: str
+    category: str
+    severity: str
+    reason:str
+    is_active: bool
+
+    class Config:
+        form_mode = True
