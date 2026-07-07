@@ -1,5 +1,6 @@
-from sqlchemy import Column, String, Boolean, DataTime
-from sqlchemy.sql import func
+from sqlalchemy import Column, Integer, String, Boolean, DateTime
+from sqlalchemy.sql import func
+from datetime import datetime
 
 from app.config.base import Base
 
@@ -13,4 +14,4 @@ class ThreatRule(Base):
     severity = Column(String, nullable=False)
     reason = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
-    created_at = Column(DataTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())

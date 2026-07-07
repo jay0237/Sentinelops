@@ -8,7 +8,7 @@ from app.config.database import engine
 from app.core.observability import limiter
 from app.middleware.security_middleware import SecurityMiddleware
 from slowapi.middleware import SlowAPIMiddleware
-
+from app.models.threat_rule import ThreatRule
 from app.routes.admin import router as admin_router
 from app.routes.analytics import router as analytics_router
 from app.routes.api_keys import router as api_keys_router
