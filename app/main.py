@@ -14,12 +14,13 @@ from app.routes.analytics import router as analytics_router
 from app.routes.api_keys import router as api_keys_router
 from app.routes.auth import router as auth_router
 from app.routes.scan import router as scan_router
-
+from app.routes.threat_rules import router as threat_rules_router
 app = FastAPI()
 
 app.add_middleware(SecurityMiddleware)
 app.state.limiter = limiter
 app.add_middleware(SlowAPIMiddleware)
+app.include_router(threat_rules_router)
 
 app.add_middleware(
     CORSMiddleware,
