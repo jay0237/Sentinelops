@@ -16,3 +16,17 @@ def get_db():
         yield db
     finally:
         db.close()
+
+@router.post("/", response_model=ThreatRuleResponse)
+def create_rule( rule: ThreatRuleCreate, db: Session = Depends(get_db)):
+    db_rule = ThreatRule(
+        keyword=rule.keyword,
+        category=rule.category,
+        severity=rule.severity,
+        reason=rule.reason,
+        is_active=rule.is_active
+    )
+    db.add(db_rule)
+    db.commit()
+    db.refresh(db_rule)
+    return db_rule
