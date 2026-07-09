@@ -30,3 +30,6 @@ def create_rule( rule: ThreatRuleCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_rule)
     return db_rule
+
+    @router.delete("/{rule_id}")
+    def delete_rule(rule_id: int, db: Session = Depends(get_db)):
