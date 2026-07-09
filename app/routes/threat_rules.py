@@ -1,8 +1,5 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
-from app.security.rule_loader import load_rules
-from app.security.redaction import redact_pii
-from app.security.risk_score import calculate_risk
 
 from app.config.database import get_db
 from app.models.threat_rule import ThreatRule

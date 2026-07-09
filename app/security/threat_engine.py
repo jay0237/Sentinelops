@@ -1,8 +1,10 @@
-from app.security.rules import RULES
+from sqlalchemy.orm import Session
+
+from app.security.rule_loader import load_rules
 from app.security.redaction import redact_pii
 from app.security.risk_score import calculate_risk
 
-def scan_threat(text):
+def analyze_text(text: str, db: Session):
 
     original_text = text
 
@@ -11,27 +13,29 @@ def scan_threat(text):
     text = redacted_text.lower()
 
 
-    for rule in RULES:
+    rules = load_rules(db)
 
-        if rule["keyword"] in text:
+    for rule in rules:
+
+        if rule.keyword in text:
 
             return {
                 "safe": False,
-                "severity": rule["severity"],
-                "reason": rule["reason"],
-                "category": rule["category"],
-                "risk_score": calculate_risk(rule["severity"]),
+                "severity": rule.severity,
+                "reason": rule.reason,
+                "category": rule.category,
+                "risk_score": calculate_risk(rule.severity),
                 "original_text": original_text,
                 "sanitized_text": redacted_text
             }
 
     return {
-        "safe": True,
-        "severity": "low",
-        "reason": "No Threat Detected",
-        "category": "None",
-        "risk_score": 0,
-        "original_text": original_text,
-        "sanitized_text": redacted_text
-    }
+    "safe": False,
+    "severity": rule.severity,
+    "reason": rule.reason,
+    "category": rule.category,
+    "risk_score": calculate_risk(rule.severity),
+    "original_text": original_text,
+    "sanitized_text": redacted_text
+}
     
