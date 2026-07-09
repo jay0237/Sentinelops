@@ -33,3 +33,5 @@ def create_rule( rule: ThreatRuleCreate, db: Session = Depends(get_db)):
 
     @router.delete("/{rule_id}")
     def delete_rule(rule_id: int, db: Session = Depends(get_db)):
+
+        rule = db.query(ThreatRule).filter(ThreatRule.id == rule_id).first()
