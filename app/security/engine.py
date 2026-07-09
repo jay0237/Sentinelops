@@ -2,12 +2,13 @@ from app.security.redaction import redact_pii
 from app.security.threat_engine import scan_threat
 from app.security.risk_score import calculate_risk
 
+from sqlalchemy.orm import Session
 
-def scan(text: str):
+    def scan(text: str, db: Session):
 
     sanitized = redact_pii(text)
 
-    threat = scan_threat(sanitized)
+    threat = scan_threat(sanitized, db)
 
     score = calculate_risk(threat["severity"])
 

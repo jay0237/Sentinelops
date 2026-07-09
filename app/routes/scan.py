@@ -35,7 +35,7 @@ def scan_ai_prompt(
     REQUEST_COUNT.inc()
 
     text = prompt.get("text", "")
-    result = scan(text)
+    result = scan(text, db)
 
     if result["safe"]:
         SAFE_PROMPT_COUNT.inc()
