@@ -35,3 +35,14 @@ def create_rule( rule: ThreatRuleCreate, db: Session = Depends(get_db)):
     def delete_rule(rule_id: int, db: Session = Depends(get_db)):
 
         rule = db.query(ThreatRule).filter(ThreatRule.id == rule_id).first()
+
+        if not rule:
+            return {"message": "Rule not found"}
+
+            db.delete(rule)
+            db.commit()
+
+            return{
+                "message" : "Rule Deleted Successfully"
+
+            }
