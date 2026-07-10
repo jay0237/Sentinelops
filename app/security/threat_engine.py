@@ -4,7 +4,7 @@ from app.security.rule_loader import load_rules
 from app.security.redaction import redact_pii
 from app.security.risk_score import calculate_risk
 
-def analyze_text(text: str, db: Session):
+def scan_threat(text: str, db: Session):
 
     original_text = text
 
@@ -30,12 +30,15 @@ def analyze_text(text: str, db: Session):
             }
 
     return {
-    "safe": False,
-    "severity": rule.severity,
-    "reason": rule.reason,
-    "category": rule.category,
-    "risk_score": calculate_risk(rule.severity),
-    "original_text": original_text,
-    "sanitized_text": redacted_text
-}
+        "safe": True,
+        "severity": "none",
+        "reason": "No threat detected",
+        "category": "General",
+        "risk_score": 0,
+        "original_text": original_text,
+        "sanitized_text": redacted_text
+    }
+
+
+analyze_text = scan_threat
     

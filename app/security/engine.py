@@ -4,7 +4,7 @@ from app.security.risk_score import calculate_risk
 
 from sqlalchemy.orm import Session
 
-    def scan(text: str, db: Session):
+def scan(text: str, db: Session):
 
     sanitized = redact_pii(text)
 

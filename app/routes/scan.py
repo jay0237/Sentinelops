@@ -65,14 +65,15 @@ def scan_ai_prompt(
 
 @router.post("/scan-file")
 async def scan_file(
-    file: UploadFile = File(...)
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
 ):
 
     content = await file.read()
 
     text = content.decode("utf-8", errors="ignore")
 
-    result = scan(text)
+    result = scan(text, db)
 
     return {
         "filename": file.filename,
