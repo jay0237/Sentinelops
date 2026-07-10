@@ -65,3 +65,16 @@ def create_rule( rule: ThreatRuleCreate, db: Session = Depends(get_db)):
             db.refresh(db_rule)
 
             return db_rule
+
+    @router.patch("/{rule_id}/toggle")
+    def toggle_rule_active(rule_id: int, db: Session = Depends(get_db)):
+        rule = db.query(ThreatRule).filter(ThreatRule.id == rule_id).first()
+
+        if not rule:
+            return {"message": "Rule not found"}
+
+        rule.is_active = not rule.is_active
+        db.commit()
+        db.refresh(rule)
+
+        return rule
