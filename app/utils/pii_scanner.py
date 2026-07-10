@@ -1,8 +1,19 @@
-from presidio_analyzer import AnalyzerEngine
+try:
+    from presidio_analyzer import AnalyzerEngine
+except ImportError:
+    AnalyzerEngine = None
 
-analyzer = AnalyzerEngine()
+analyzer = None
 
 def detect_pii(text):
+
+    if AnalyzerEngine is None:
+        return []
+
+    global analyzer
+
+    if analyzer is None:
+        analyzer = AnalyzerEngine()
 
     result = analyzer.analyze(
         text=text,
