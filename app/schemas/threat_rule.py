@@ -1,18 +1,22 @@
-from pdyantic import BaseModel
+from datetime import datetime
 
-class ThreatRule(BaseModel):
+from pydantic import BaseModel, ConfigDict
+
+
+class ThreatRuleBase(BaseModel):
     keyword: str
     category: str
     severity: str
     reason: str
+    is_active: bool = True
 
-class ThreatRuleCreate(ThreatRule):
+
+class ThreatRuleCreate(ThreatRuleBase):
+    pass
+
+
+class ThreatRuleResponse(ThreatRuleBase):
     id: int
-    keyword: str
-    category: str
-    severity: str
-    reason:str
-    is_active: bool
+    created_at: datetime | None = None
 
-    class Config:
-        form_mode = True
+    model_config = ConfigDict(from_attributes=True)
