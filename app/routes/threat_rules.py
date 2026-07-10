@@ -77,4 +77,10 @@ def create_rule( rule: ThreatRuleCreate, db: Session = Depends(get_db)):
         db.commit()
         db.refresh(rule)
 
-        return rule
+        return {
+            "message": "Rule active status toggled successfully",
+            "rule": rule,
+            "keyword": rule.keyword,
+            "category": rule.category,
+            "is_active": rule.is_active
+        }
