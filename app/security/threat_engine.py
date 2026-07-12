@@ -15,15 +15,20 @@ def scan_threat(text: str, db: Session):
 
     rules = load_rules(db)
 
+    matches = []
+
     for rule in rules:
 
         if rule.keyword in text:
+            matches.append(rule)
 
-            return {
-                "safe": False,
-                "severity": rule.severity,
-                "reason": rule.reason,
-                "category": rule.category,
+    if matches:
+        rule = matches[0]  # Take the first match
+        return {
+            "safe": False,
+            "severity": rule.severity,
+            "reason": rule.reason,
+            "category": rule.category,
                 "risk_score": calculate_risk(rule.severity),
                 "original_text": original_text,
                 "sanitized_text": redacted_text
