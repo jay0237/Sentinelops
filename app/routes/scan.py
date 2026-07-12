@@ -1,6 +1,7 @@
 import time
 
 from fastapi import APIRouter, Depends, File, Request, UploadFile
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.config.api_key import verify_api_key
@@ -54,8 +55,11 @@ def scan_ai_prompt(
         category=result.get("category", "General")
     )
 
-    db.add(log)
-    db.commit()
+    try:
+        db.add(log)
+        db.commit()
+    except SQLAlchemyError:
+        db.rollback()
 
     REQUEST_DURATION.observe(
         time.time() - start_time

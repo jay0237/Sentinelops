@@ -1,6 +1,8 @@
+import os
+
 from fastapi import Header, HTTPException
 
-API_KEY = "sentinelops-secret-key"
+API_KEY = os.getenv("API_KEY", "sentinelops-secret-key")
 
 def verify_api_key(x_api_key: str = Header(None)):
 

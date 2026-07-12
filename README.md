@@ -102,6 +102,27 @@ My email is [EMAIL_REDACTED] and my phone is [PHONE_REDACTED]
 
 ---
 
+#  Scan Response Contract
+
+`POST /scan` returns a normalized threat report:
+
+```json
+{
+        "safe": true,
+        "severity": "low",
+        "category": "None",
+        "reason": "No Threat Detected",
+        "risk_score": 0,
+        "original_text": "...",
+        "sanitized_text": "...",
+        "matched_rules": []
+}
+```
+
+Threat rules are database-backed and support `keyword` and `regex` rule types through the `/rules` endpoints.
+
+---
+
 ## Analytics
 
 - Total Prompt Statistics
