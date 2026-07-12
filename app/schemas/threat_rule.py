@@ -3,6 +3,8 @@ from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
+    rule_type: str = "keyword"
+    pattern: str | None = None
 
 class ThreatRuleBase(BaseModel):
     keyword: str

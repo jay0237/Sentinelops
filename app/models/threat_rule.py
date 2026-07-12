@@ -15,3 +15,5 @@ class ThreatRule(Base):
     reason = Column(String, nullable=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow, server_default=func.now())
+    rule_type = Column(String, nullable=False, default="keyword")
+    pattern = Column(String, nullable=True)
