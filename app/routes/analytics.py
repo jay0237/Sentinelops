@@ -144,7 +144,7 @@ def threat_history(db: Session = Depends(get_db)):
     return history
 
 
-@router.get("/threat-summary-by-category")
+@router.get("/threat-summary")
 def threat_summary(db: Session = Depends(get_db)):
 
     return {
@@ -186,8 +186,8 @@ def threat_categories(
     }
 
 
-@router.get("/threat-summary")
-def threat_summary(db: Session = Depends(get_db)):
+@router.get("/threat-summary-by-category")
+def threat_summary_by_category(db: Session = Depends(get_db)):
 
     malware = db.query(PromptLog).filter(
         PromptLog.category == "Malware"
