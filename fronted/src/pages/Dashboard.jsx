@@ -22,11 +22,11 @@ function Dashboard({ theme, setTheme }) {
 
         if (!result) return "";
 
-        if (result.threat_level === "high") {
+        if (result.severity === "high" || result.severity === "critical") {
             return "text-red-500";
         }
 
-        if (result.threat_level === "medium") {
+        if (result.severity === "medium") {
             return "text-yellow-400";
         }
 
@@ -148,7 +148,7 @@ function Dashboard({ theme, setTheme }) {
 
     const scanResult = fileResult?.result || fileResult?.scan_result;
     const isThreatening =
-        scanResult?.threat_level === "high" || scanResult?.threat_level === "critical";
+        scanResult?.severity === "high" || scanResult?.severity === "critical";
 
     return (
 
@@ -312,7 +312,7 @@ function Dashboard({ theme, setTheme }) {
                         <div className="flex items-center justify-between">
                             <p className={tableMutedClass}><strong>Threat Level:</strong></p>
                             <p className={`font-bold text-lg ${isThreatening ? 'text-red-400' : 'text-green-400'}`}>
-                                {scanResult.threat_level?.toUpperCase()}
+                                {scanResult.severity?.toUpperCase()}
                             </p>
                         </div>
 
@@ -353,11 +353,11 @@ function Dashboard({ theme, setTheme }) {
                         <div className="flex items-center justify-between">
                             <p className={tableMutedClass}><strong>Threat Level:</strong></p>
                             <p className={`${getThreatColor()} font-semibold text-lg`}>
-                                {result.threat_level?.toUpperCase() || 'N/A'}
+                                {result.severity?.toUpperCase() || 'N/A'}
                             </p>
                         </div>
 
-                        {result.score && (
+                        {typeof result.risk_score === "number" && (
                             <div className="flex items-center justify-between">
                                 <p className={tableMutedClass}><strong>Risk Score:</strong></p>
                                 <div className={
@@ -365,8 +365,8 @@ function Dashboard({ theme, setTheme }) {
                                         ? "w-32 h-2 bg-slate-700 rounded-full overflow-hidden"
                                         : "w-32 h-2 bg-slate-300 rounded-full overflow-hidden"
                                 }>
-                                    <div className={`h-full ${result.score > 0.7 ? 'bg-red-500' : result.score > 0.4 ? 'bg-yellow-500' : 'bg-green-500'}`} 
-                                         style={{width: `${result.score * 100}%`}}></div>
+                                    <div className={`h-full ${result.risk_score > 70 ? 'bg-red-500' : result.risk_score > 40 ? 'bg-yellow-500' : 'bg-green-500'}`} 
+                                         style={{width: `${result.risk_score}%`}}></div>
                                 </div>
                             </div>
                         )}

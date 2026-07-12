@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.config.deps import get_db
@@ -8,18 +9,22 @@ from app.schemas.threat_rule import ThreatRuleCreate, ThreatRuleResponse
 router = APIRouter(prefix="/rules", tags=["Threat Rules"])
 
 
+def _handle_db_error(db: Session, exc: Exception) -> None:
+    db.rollback()
+    raise HTTPException(status_code=503, detail="Database operation failed") from exc
+
+
 @router.post("/", response_model=ThreatRuleResponse)
 def create_rule(rule: ThreatRuleCreate, db: Session = Depends(get_db)):
-    db_rule = ThreatRule(
-        keyword=rule.keyword,
-        category=rule.category,
-        severity=rule.severity,
-        reason=rule.reason,
-        is_active=rule.is_active,
-    )
-    db.add(db_rule)
-    db.commit()
-    db.refresh(db_rule)
+    db_rule = ThreatRule(**rule.model_dump())
+
+    try:
+        db.add(db_rule)
+        db.commit()
+        db.refresh(db_rule)
+    except SQLAlchemyError as exc:
+        _handle_db_error(db, exc)
+
     return db_rule
 
 
@@ -42,14 +47,15 @@ def update_rule(rule_id: int, rule: ThreatRuleCreate, db: Session = Depends(get_
     if not db_rule:
         raise HTTPException(status_code=404, detail="Rule not found")
 
-    db_rule.keyword = rule.keyword
-    db_rule.category = rule.category
-    db_rule.severity = rule.severity
-    db_rule.reason = rule.reason
-    db_rule.is_active = rule.is_active
+    for field, value in rule.model_dump().items():
+        setattr(db_rule, field, value)
 
-    db.commit()
-    db.refresh(db_rule)
+    try:
+        db.commit()
+        db.refresh(db_rule)
+    except SQLAlchemyError as exc:
+        _handle_db_error(db, exc)
+
     return db_rule
 
 
@@ -59,8 +65,12 @@ def delete_rule(rule_id: int, db: Session = Depends(get_db)):
     if not rule:
         raise HTTPException(status_code=404, detail="Rule not found")
 
-    db.delete(rule)
-    db.commit()
+    try:
+        db.delete(rule)
+        db.commit()
+    except SQLAlchemyError as exc:
+        _handle_db_error(db, exc)
+
     return {"message": "Rule deleted successfully"}
 
 
@@ -71,6 +81,11 @@ def toggle_rule_active(rule_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Rule not found")
 
     rule.is_active = not rule.is_active
-    db.commit()
-    db.refresh(rule)
+
+    try:
+        db.commit()
+        db.refresh(rule)
+    except SQLAlchemyError as exc:
+        _handle_db_error(db, exc)
+
     return rule

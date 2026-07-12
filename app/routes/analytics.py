@@ -144,7 +144,7 @@ def threat_history(db: Session = Depends(get_db)):
     return history
 
 
-@router.get("/threat-summary")
+@router.get("/threat-summary-by-category")
 def threat_summary(db: Session = Depends(get_db)):
 
     return {

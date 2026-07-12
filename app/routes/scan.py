@@ -14,6 +14,7 @@ from app.core.observability import (
     limiter,
 )
 from app.models.prompt_log import PromptLog
+from app.schemas.scan import PromptScanRequest, ScanResponse
 from app.security.engine import scan
 from app.utils.injection_detector import detect_prompt_injection
 from app.utils.pii_scanner import detect_pii
@@ -21,11 +22,11 @@ from app.utils.pii_scanner import detect_pii
 router = APIRouter()
 
 
-@router.post("/scan")
+@router.post("/scan", response_model=ScanResponse)
 @limiter.limit("5/minute")
 def scan_ai_prompt(
     request: Request,
-    prompt: dict,
+    prompt: PromptScanRequest,
     db: Session = Depends(get_db),
     api_key: str = Depends(verify_api_key)
 ):
@@ -34,7 +35,7 @@ def scan_ai_prompt(
 
     REQUEST_COUNT.inc()
 
-    text = prompt.get("text", "")
+    text = prompt.text
     result = scan(text, db)
 
     if result["safe"]:
@@ -46,7 +47,7 @@ def scan_ai_prompt(
         HIGH_THREAT_COUNT.inc()
 
     log = PromptLog(
-        prompt=result["original_prompt"],
+        prompt=result["original_text"],
         status="safe" if result["safe"] else "blocked",
         reason=result["reason"],
         severity=result.get("severity"),

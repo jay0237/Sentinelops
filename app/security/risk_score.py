@@ -1,4 +1,4 @@
-def calculate_risk(serverity: str):
+def calculate_risk(severity: str) -> int:
 
     scores = {
         "low": 20,
@@ -7,4 +7,4 @@ def calculate_risk(serverity: str):
         "critical": 100
     }
 
-    return scores.get(serverity.lower(), 0)
+    return scores.get(severity.lower(), 0)
