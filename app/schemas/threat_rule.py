@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
 
@@ -17,6 +18,6 @@ class ThreatRuleCreate(ThreatRuleBase):
 
 class ThreatRuleResponse(ThreatRuleBase):
     id: int
-    created_at: datetime | None = None
+    created_at: Optional[datetime] = None
 
     model_config = ConfigDict(from_attributes=True)
